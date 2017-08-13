@@ -1,0 +1,31 @@
+- name: init
+  =>+: "What is your Anki username?"
+  =?>:
+      +: 
+        - "[[_anki_username = msg]]"
+        - And now the password
+- name: get_password
+  extra: 
+    response_type: password
+  +=>: 
+    - "[[_anki_password = msg]]"
+    - "[[_anki_hkey = get_anki_hkey(_anki_username, _anki_password)]]"
+  =?>:
+    - ?: "{{_anki_hkey != None}}"
+      +: Authentication worked, now I'll try to sync your account
+    - +: Authentication with ankiweb failed, try again?
+      =>: init
+- name: sync
+  noreply: True
+  =>+:
+    - "{{sync_anki(username, _anki_hkey, _storage)}}"
+  =?>:
+    - ?: "{{anki_sync_successful}}"
+      +: 
+        - "[[anki_hkey = _anki_hkey]]"
+        - Great, you're all synced up!
+      =>: return
+    - +: 
+        - "That didn't seem to work: {{anki_error_msg}}"
+        - Let's try again
+      =>: init

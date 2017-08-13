@@ -1,0 +1,3 @@
+from rememberberry.anki_integration import sync_anki, get_anki_hkey
+
+anki_hkey = None

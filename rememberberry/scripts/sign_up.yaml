@@ -1,0 +1,43 @@
+- name: init
+  =>+: "What username would you like to have?"
+  +=>: "[[_is_valid_username, _validation_msg = validate_username(msg)]]"
+  =?>:
+    - ?: "{{_is_valid_username}}"
+      +: 
+        - "[[_username = msg]]"
+        - And now the password
+      =>: get_password
+    - +: 
+        - "{{_validation_msg}}"
+      =>: loopback
+- name: get_password
+  extra:
+    response_type: password
+  +=>: "[[_is_valid_password, _validation_msg = validate_password(msg)]]"
+  =?>:
+    - ?: "{{_is_valid_password}}"
+      +: 
+        - "[[_password = msg]]"
+        - Now type the password again so we know there's no typo in there
+      =>: confirm_password
+    - +: 
+        - "{{_validation_msg}}"
+        - Please try again
+      =>: loopback
+- name: confirm_password
+  extra:
+    response_type: password
+  =?>:
+    - ?: "{{msg == _password}}"
+      +: 
+        - "[[username = _username]]"
+        - "{{create_account(username, _password, _storage)}}"
+        - "[[auth_token = generate_auth_token(username, _password)]]"
+        # notfiy the client to remember the auth token for future authentications
+        - "auth_token={{auth_token}}"
+        - Great, we're all done!
+      =>: return
+    - +: 
+        - Sorry, that didn't match what you typed before, let's start over
+        - What password would you like again?
+      =>: get_password

@@ -1,0 +1,2 @@
+PYTHONPATH not in sudo
+https://stackoverflow.com/questions/25387374/why-are-modules-in-pythonpath-not-found-when-the-containing-directory-is-part-of

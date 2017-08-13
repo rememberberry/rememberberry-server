@@ -1,0 +1,71 @@
+- name: init
+  =?>: # check the first messsage for an auth token
+    - ?: "auth_token=(?P<_sent_auth_token>.*)"
+      +: "[[_login_successful = login_with_token(_sent_auth_token, _storage)]]"
+- noreply: True
+  =?>:
+    - ?: "{{initial_setup_done}}"
+      +: "{{'Hey %s!' % name}}"
+      =>: what_do
+    - +: Hello there!
+- =>+: Have we met before?
+  =?>:
+    - ?: "{{no}}"
+    - ?: "{{yes}}"
+      +: Ok, then let's log you in
+      =>: login
+      return=>: what_do
+- =>+: 
+    - I'm the Rememberberry bot, here to serve!
+    - What's your name?
+  =?>:
+    - ?: 
+        - "{{no}}"
+        - ^nothing
+        - don'+t want to say
+        - what'+s it to you
+        - why do you care
+      +: 
+        - >
+            No problem, I'll just refer to you as "Meatbag" for now. If you
+            want to tell me your name later, just say "My name is <not Meatbag>"
+            Now let's sign you up
+      =>: sign_up
+      return=>: next
+    - +: 
+        - "[[name = msg]]"
+        - "Alright then {{name}}, nice to meet you! Let's sign you up"
+      =>: sign_up
+      return=>: next
+- =>+: >
+            Do you have an Anki account that you want to sync with
+            (if you want to create one, head to <a href='ankiweb.net'>ankiweb</a>)
+  =?>:
+    - ?: "{{no}}"
+      =>: next
+      +: Ok, then we'll start with an empty account
+    - ?: "{{yes}}"
+      +: Ok, let's setup your Anki account
+      =>: login_anki
+      return=>: next
+- =>+: 
+    - "[[initial_setup_done = True]]"
+  noreply: True
+  =?>:
+    =>: what_do
+- name: what_do
+  =>+: What would you like to do?
+  extra:
+    replies: 
+      - study
+      - add cards
+  =?>: 
+    - ?: study
+      =>: study
+      +: Alright then, let's study
+    - ?: 
+        - add
+        - add card(s)+
+      =>: add_cards
+    - =>: loopback
+      +: Sorry, not sure what that is

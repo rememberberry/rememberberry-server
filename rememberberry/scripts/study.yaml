@@ -1,0 +1,32 @@
+- name: init
+  noreply: True
+  =>+: 
+    - "[[_col = get_anki_col(username)]]"
+    - "[[_scheduler = Scheduler(_col)]]"
+- name: display_card
+  noreply: True
+  =>+: "[[_card = _scheduler.getCard()]]"
+  =?>:
+    - ?: "{{_card is not None}}"
+      +: "{{format_anki_question(_scheduler, _card, _storage)}}"
+      =>: answer_card
+    - ?: "{{_col.isEmpty()}}"
+      +: There are no cards in your collection
+      =>: exit
+    - +: All the scheduled cards are done
+      =>: exit
+- name: answer_card
+  =?>:
+    - ?: "{{number_between(1, _num_answer_buttons+1)}}"
+      +: 
+        - "[[answer_card(_scheduler, _card, msg)]]"
+      =>: display_card
+    - +: "I don't understand, I was excpecting an answer between 1 and {{_num_answer_buttons+1}}"
+      =>: display_card
+- name: exit # clean up before returning
+  =>+:
+    - "[[_col.close(save=True)]]"
+    - "[[_col = None]]"
+  noreply: True
+  =?>:
+    =>: return

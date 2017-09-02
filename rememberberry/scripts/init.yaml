@@ -15,6 +15,10 @@
       +: Ok, then let's log you in
       =>: login
       return=>: what_do
+  extra:
+    replies:
+      - "yes"
+      - "no"
 - =>+: 
     - I'm the Rememberberry bot, here to serve!
     - What's your name?
@@ -48,6 +52,10 @@
       +: Ok, let's setup your Anki account
       =>: login_anki
       return=>: next
+  extra:
+    replies:
+      - "yes"
+      - "no"
 - =>+: 
     - "[[initial_setup_done = True]]"
   noreply: True

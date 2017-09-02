@@ -115,7 +115,7 @@ def format_anki_question(scheduler, card, storage):
         timing = _get_timing(scheduler, card, ease)
         buttons.append({
             'msg': ease,
-            'label': '%i: %s (%s)' % (ease, label, timing),
+            'label': '%s (%s)' % (label, timing),
             'color': color_map[label]
         })
 

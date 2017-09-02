@@ -16,15 +16,16 @@ async def test_signup_login():
     storage['name'] = 'benny'
     m, storage = get_isolated_story('sign_up', storage)
     await assert_replies(m.reply(''), 'What username would you like to have?')
-    await assert_replies(m.reply('benny'), 'And now the password')
+    await assert_replies(m.reply('benny'), 'What password would you like?')
     await assert_replies(m.reply('asd'),
                          'The password is too short, we recommend > 6 characters',
-                         'Please try again')
+                         'Please try again',
+                         'What password would you like?')
     await assert_replies(m.reply('asdasd'),
                          'Now type the password again so we know there\'s no typo in there')
     await assert_replies(m.reply('asdasd2'),
                          'Sorry, that didn\'t match what you typed before, let\'s start over',
-                         'What password would you like again?')
+                         'What password would you like?')
     await assert_replies(m.reply('asdasd'),
                          'Now type the password again so we know there\'s no typo in there')
     await assert_replies(m.reply('asdasd'),

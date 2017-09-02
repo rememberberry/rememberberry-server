@@ -3,10 +3,11 @@
   =?>:
       +: 
         - "[[_anki_username = msg]]"
-        - And now the password
 - name: get_password
+  =>+: And now the password
   extra: 
     response_type: password
+    silent_response: true
   +=>: 
     - "[[_anki_password = msg]]"
     - "[[_anki_hkey = get_anki_hkey(_anki_username, _anki_password)]]"

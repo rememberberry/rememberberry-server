@@ -125,8 +125,8 @@ def format_anki_question(scheduler, card, storage):
         return (PROGRESS_TMPL.substitute(
             blue=counts[0], red=counts[1], green=counts[2],
             blue_ul=(ulstr if idx == 0 else ''),
-            green_ul=(ulstr if idx == 1 else ''),
-            red_ul=(ulstr if idx == 2 else '')) + html)
+            red_ul=(ulstr if idx == 1 else ''),
+            green_ul=(ulstr if idx == 2 else '')) + html)
     return {
         'content': {
             'type': 'card',

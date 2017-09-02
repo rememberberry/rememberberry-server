@@ -42,7 +42,7 @@ def get_anki_col(username):
     return Collection(anki_col_path(username))
 
 
-async def sync_anki(username, anki_hkey, storage):
+async def initial_anki_sync(username, anki_hkey, storage):
     """Downloads a users's anki database and media files to rememberberry"""
     try:
         col = get_anki_col(username)

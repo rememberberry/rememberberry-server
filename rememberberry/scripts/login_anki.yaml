@@ -18,7 +18,7 @@
 - name: sync
   noreply: True
   =>+:
-    - "{{sync_anki(username, _anki_hkey, _storage)}}"
+    - "{{initial_anki_sync(username, _anki_hkey, _storage)}}"
   =?>:
     - ?: "{{anki_sync_successful}}"
       +: 

@@ -1,7 +1,7 @@
 - name: init
   noreply: True
   =>+: 
-    - "[[_col = get_anki_col(username)]]"
+    - "[[_col = _storage.get('_col', None) or get_anki_col(username)]]"
     - "[[_scheduler = Scheduler(_col)]]"
 - name: display_card
   noreply: True
@@ -23,10 +23,13 @@
       =>: display_card
     - +: "I don't understand, I was excpecting an answer between 1 and {{_num_answer_buttons+1}}"
       =>: display_card
+  # if we return from a global trigger, need to init
+  return=>: init
 - name: exit # clean up before returning
   =>+:
     - "[[_col.close(save=True)]]"
     - "[[_col = None]]"
+    - "[[_scheduler = None]]"
   noreply: True
   =?>:
     =>: return

@@ -10,7 +10,7 @@ from rememberberry.testing import tmp_data_path, get_isolated_story, assert_repl
 
 @pytest.mark.asyncio
 @tmp_data_path('/tmp/data', delete=True)
-async def test_anki():
+async def test_study_anki():
     shutil.copytree(os.path.join(os.path.dirname(__file__), 'data'), '/tmp/data')
 
     username = 'asd'
@@ -32,3 +32,27 @@ async def test_anki():
     await assert_replies(m.reply('3'),
                          'All the scheduled cards are done',
                          'What would you like to do?')
+
+
+@pytest.mark.asyncio
+@tmp_data_path('/tmp/data', delete=True)
+async def test_decks():
+    shutil.copytree(os.path.join(os.path.dirname(__file__), 'data'), '/tmp/data')
+
+    username = 'asd'
+    storage = FileStorage(data_file(username))
+    script = load_scripts_dir(rememberberry.SCRIPTS_PATH, storage)
+    validate_script(script)
+    await storage.load()
+    m = RememberMachine(script, storage)
+    m.init()
+
+    def check_card(x):
+        return x['content'].get('type', '') == 'card'
+
+    await assert_replies(m.reply(''), 'Hey asd!', 'What would you like to do?')
+    await assert_replies(m.reply('study'),
+                         'Alright then, let\'s study',
+                         check_card)
+    await assert_replies(m.reply('decks'),
+                         lambda x: x['replies'][0]['label'] == '1: Default [0 0 1]')

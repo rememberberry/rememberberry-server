@@ -1,0 +1,27 @@
+- name: init
+  ?:
+    - change deck
+    - decks
+    - deck
+    - show decks
+    - deck list
+    - deck
+  =>+: 
+      - "[[_col = _storage.get('_col', None) or get_anki_col(username)]]"
+      - "[[_scheduler = Scheduler(_col)]]"
+      - "[[_decks = _scheduler.deckDueList()]]"
+      - "{{format_deck_replies(_decks)}}"
+  =?>:
+    - ?: "{{number_between(1, len(_decks)+1)}}"
+      +:
+        - "[[selected_deck = _decks[int(match0) - 1] ]]"
+        - "Selected deck \"{{selected_deck[0]}}\""
+        - "[[_col.decks.select(selected_deck[1])]]"
+      =>: return
+    - ?: 
+        - back
+        - go back
+        - return
+      =>: return
+    - +: "Huh?"
+      =>: init

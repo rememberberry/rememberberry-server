@@ -67,6 +67,7 @@
     replies: 
       - study
       - add cards
+      - change deck
   =?>: 
     - ?: study
       =>: study

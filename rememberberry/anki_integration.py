@@ -140,3 +140,19 @@ def format_anki_question(scheduler, card, storage):
 def answer_card(scheduler, card, msg):
     ease = int(msg)
     scheduler.answerCard(card, ease=ease)
+
+
+def format_deck_replies(decks):
+    def make_reply_button(name, did, rev, lrn, new, idx):
+        return {
+            'msg': idx+1,
+            'label': '%i: %s [%i %i %i]' % (idx+1, name, rev, lrn, new)
+        }
+
+    replies = [make_reply_button(*deck, i) for i, deck in enumerate(decks)]
+
+    return {
+        'content': 'Here are your decks, pick one to select',
+        'replies': replies,
+        'enumerate': False
+    }

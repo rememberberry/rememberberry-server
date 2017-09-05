@@ -1,9 +1,9 @@
 # Install Python3.6 and pip
 apt update && apt upgrade
-apt-get install python-software-properties
+apt-get install -y python-software-properties
 add-apt-repository ppa:fkrull/deadsnakes
 apt update && apt upgrade
-apt-get install python3.6
+apt-get install -y python3.6
 curl https://bootstrap.pypa.io/get-pip.py | sudo python3.6
 
 # Install server requirements
@@ -15,7 +15,7 @@ git clone https://github.com/rememberberry/rememberberry-client.git ../rememberb
 
 # Install Anki
 git clone https://github.com/dae/anki.git ../anki
-apt install python3.6-dev libasound-dev portaudio19-dev libportaudio2 libportaudiocpp0 ffmpeg libav-tools
+apt install -y python3.6-dev libasound-dev portaudio19-dev libportaudio2 libportaudiocpp0 ffmpeg libav-tools
 pip3.6 install -r ../anki/requirements.txt
 
 # Update python path

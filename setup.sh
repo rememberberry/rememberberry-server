@@ -1,4 +1,6 @@
 # Install Python3.6 and pip
+apt update && apt upgrade
+apt-get install python-software-properties
 add-apt-repository ppa:fkrull/deadsnakes
 apt update && apt upgrade
 apt-get install python3.6

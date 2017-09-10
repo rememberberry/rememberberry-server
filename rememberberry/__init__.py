@@ -1,6 +1,6 @@
 import os
 
-SCRIPTS_PATH = os.environ.get('REMEMBERBERRY_DATA_PATH',
+SCRIPTS_PATH = os.environ.get('REMEMBERBERRY_SCRIPTS_PATH',
                               os.path.join(os.path.dirname(__file__), 'scripts'))
 DATA_PATH = os.environ.get('REMEMBERBERRY_DATA_PATH',
                            os.path.join(os.path.dirname(__file__), 'data'))

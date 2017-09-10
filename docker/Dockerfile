@@ -31,4 +31,7 @@ ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
 
+# Set the cert path (need to volume map into this folder)
+ENV REMEMBERBERRY_CERT_PATH /certs/
+
 CMD ["python3.6", "-m", "rememberberry.server"]

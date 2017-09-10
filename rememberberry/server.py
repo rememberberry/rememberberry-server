@@ -1,6 +1,7 @@
 import os
 import sys
 import json
+import ssl
 import asyncio
 import aiohttp
 import logging
@@ -60,8 +61,18 @@ async def message_websocket_handler(request):
 
 if __name__ == '__main__':
     port = int(sys.argv[1]) if len(sys.argv) > 1 else 80
-    app.router.add_route('GET', '/messages', message_websocket_handler)
+    ssl_cert_path = sys.argv[2] if len(sys.argv) > 2 else None
+
+    ssl_context = None
+    ssl_cert_path = os.environ.get('REMEMBERBERRY_CERT_PATH', None)
+    if ssl_cert_path:
+        ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
+        ssl_context.load_cert_chain(
+            os.path.join(ssl_cert_path, 'fullchain.pem'),
+            os.path.join(ssl_cert_path, 'privkey.pem'))
+
+    app.router.add_route('GET', '/', message_websocket_handler)
     try:
-        web.run_app(app, host='0.0.0.0', port=port)
+        web.run_app(app, host='0.0.0.0', ssl_context=ssl_context, port=port)
     except KeyboardInterrupt:
         asyncio.get_event_loop().run_until_complete(cleanup())

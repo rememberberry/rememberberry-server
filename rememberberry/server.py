@@ -66,6 +66,7 @@ if __name__ == '__main__':
     ssl_context = None
     ssl_cert_path = os.environ.get('REMEMBERBERRY_CERT_PATH', None)
     if ssl_cert_path:
+        print('using ssl context from %s' % ssl_cert_path)
         ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
         ssl_context.load_cert_chain(
             os.path.join(ssl_cert_path, 'fullchain.pem'),

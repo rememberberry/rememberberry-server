@@ -33,4 +33,6 @@ ENV REMEMBERBERRY_CERT_PATH /etc/letsencrypt/live/bot.rememberberry.com/
 # Update python path
 ENV PYTHONPATH=$PYTHONPATH:/rememberscript:/anki:/rememberberry-server
 
+EXPOSE 443
+
 CMD ["python3.6", "-m", "rememberberry.server"]

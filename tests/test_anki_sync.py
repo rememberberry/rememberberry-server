@@ -8,6 +8,7 @@ from rememberberry.testing import tmp_data_path, assert_replies, get_isolated_st
 @tmp_data_path('/tmp/data/', delete=True)
 async def test_anki_account():
     storage = FileStorage()
+    storage['username'] = 'alice'
     m, storage = get_isolated_story('login_anki', storage)
     await assert_replies(m.reply(''), 'What is your Anki username?')
     await assert_replies(m.reply('ajshdkajhsdkajshd'), 'And now the password')

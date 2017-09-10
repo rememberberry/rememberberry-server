@@ -1,4 +1,5 @@
 import os
+import sys
 import json
 import asyncio
 import aiohttp
@@ -57,6 +58,10 @@ async def message_websocket_handler(request):
     return ws
 
 
-app.router.add_route('GET', '/messages', message_websocket_handler)
-web.run_app(app, host='0.0.0.0', port=80)
-
+if __name__ == '__main__':
+    port = int(sys.argv[1]) if len(sys.argv) > 1 else 80
+    app.router.add_route('GET', '/messages', message_websocket_handler)
+    try:
+        web.run_app(app, host='0.0.0.0', port=port)
+    except KeyboardInterrupt:
+        asyncio.get_event_loop().run_until_complete(cleanup())

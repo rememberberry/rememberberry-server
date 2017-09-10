@@ -19,6 +19,10 @@ RUN apt install -y python3.6-dev libasound-dev portaudio19-dev libportaudio2 lib
 RUN pip3.6 install -r anki/requirements.txt
 
 # Install rememberberry client and server and rememberscript
+
+# This arg will invalidate the cache for next RUN
+# Build with: docker build --build-arg CACHE_DATE=$(date) ....
+ARG CACHE_DATE=1
 RUN git clone https://github.com/rememberberry/rememberberry-server && pip3.6 install -r rememberberry-server/requirements.txt
 RUN git clone https://github.com/rememberberry/rememberscript.git && pip3.6 install -r rememberscript/requirements.txt
 RUN git clone https://github.com/rememberberry/rememberberry-client.git

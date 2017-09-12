@@ -1,0 +1,26 @@
+1. Install Docker
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+sudo apt-get update
+sudo apt-get install -y docker-ce
+
+2. Clone rememberberry-server
+git clone https://github.com/rememberberry/rememberberry-server.git
+
+3. Build rememberberry container:
+cd rememberberry-server/docker
+docker build --build-arg CACHE_DATE=2 -t rememberberry .
+
+3. Setup Letsencrypt ssl certificates
+sudo git clone https://github.com/letsencrypt/letsencrypt /opt/letsencrypt
+cd /opt/letsencrypt
+sudo -H ./letsencrypt-auto certonly --standalone -d bot.rememberberry.com
+
+4. Run docker container
+docker run -v /etc/letsencrypt/:/etc/letsencrypt/ -p 443:443 -td rememberberry   
+
+5. Publish client website
+git clone https://github.com/rememberberry/rememberberry-client.git
+cd rememberberry-client
+./setup.sh
+./build.sh

@@ -34,6 +34,6 @@ ENV REMEMBERBERRY_DATA_PATH /data/
 # Update python path
 ENV PYTHONPATH=$PYTHONPATH:/rememberscript:/anki:/rememberberry-server
 
-EXPOSE 443
+EXPOSE 80 443
 
 CMD ["python3.6", "-m", "rememberberry.server"]

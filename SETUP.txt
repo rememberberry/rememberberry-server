@@ -24,3 +24,5 @@ git clone https://github.com/rememberberry/rememberberry-client.git
 cd rememberberry-client
 ./setup.sh
 ./build.sh
+ipfs add -r build
+ipfs name publish ${folder hash}

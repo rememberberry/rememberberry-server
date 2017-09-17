@@ -1,3 +1,8 @@
+# Notes:
+# Volume map 
+#  * /etc/letsencrypt/ from host to container
+#  * ~/.ipfs/ to /root/.ipfs
+
 FROM ubuntu:16.04
 RUN apt-get update
 RUN apt-get install -y software-properties-common python-software-properties
@@ -36,4 +41,5 @@ ENV PYTHONPATH=$PYTHONPATH:/rememberscript:/anki:/rememberberry-server
 
 EXPOSE 80 443
 
-CMD ["python3.6", "-m", "rememberberry.server"]
+# Run ipfs daemon and rememberberry server
+CMD ["/rememberberry-server/run.sh"]

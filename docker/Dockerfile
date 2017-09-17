@@ -23,6 +23,12 @@ RUN git clone https://github.com/dae/anki.git
 RUN apt install -y python3.6-dev libasound-dev portaudio19-dev libportaudio2 libportaudiocpp0 ffmpeg libav-tools
 RUN pip3.6 install -r anki/requirements.txt
 
+# Install IPFS
+RUN curl -O https://ipfs.io/ipns/dist.ipfs.io/go-ipfs/v0.4.10/go-ipfs_v0.4.10_linux-amd64.tar.gz && \
+    tar -xvf go-ipfs_v0.4.10_linux-amd64.tar.gz && \
+    cd go-ipfs && \
+    ./install.sh
+
 # Install rememberberry client and server and rememberscript
 
 # This arg will invalidate the cache for next RUN

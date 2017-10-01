@@ -29,6 +29,16 @@ RUN curl -O https://ipfs.io/ipns/dist.ipfs.io/go-ipfs/v0.4.10/go-ipfs_v0.4.10_li
     cd go-ipfs && \
     ./install.sh
 
+# Install fuse and prepare for ipfs/ipns mounting
+RUN apt-get -y install fuse && \
+    addgroup fuse && \
+    chgrp fuse /etc/fuse.conf && \
+    chmod g+r  /etc/fuse.conf && \
+    usermod -a -G fuse root && \
+    mkdir /ipfs /ipns && \
+    chown root /ipfs && \
+    chown root /ipns
+
 # Install rememberberry client and server and rememberscript
 
 # This arg will invalidate the cache for next RUN

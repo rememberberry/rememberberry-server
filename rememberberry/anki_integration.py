@@ -20,12 +20,16 @@ PROGRESS_TMPL = Template(
 </div>""")
 
 def _get_hkey(anki_username, anki_password):
-    return RemoteServer(None).hostKey(anki_username, anki_password)
+    try:
+        return RemoteServer(None).hostKey(anki_username, anki_password)
+    except:
+        print('anki auth with: %s %s didn\'t work' % (anki_username, anki_password))
+        return None
 
 
 async def get_anki_hkey(anki_username, anki_password):
-     return await asyncio.get_event_loop().run_in_executor(
-            None, partial(_get_hkey, anki_username, anki_password))
+    return await asyncio.get_event_loop().run_in_executor(
+        None, partial(_get_hkey, anki_username, anki_password))
 
 
 def get_user_dir(username):
@@ -42,33 +46,40 @@ def get_anki_col(username):
     return Collection(anki_col_path(username))
 
 
-async def initial_anki_sync(username, anki_hkey, storage):
-    """Downloads a users's anki database and media files to rememberberry"""
+def _sync_anki(username, anki_hkey):
     try:
         col = get_anki_col(username)
-
-        yield 'Syncing anki database'
 
         server = RemoteServer(anki_hkey)
         client = FullSyncer(col, anki_hkey, server.client)
         client.download()
         col = get_anki_col(username) # reload collection
 
-        yield 'Syncing media files (this may take a while)'
-
         media_server = RemoteMediaServer(col, anki_hkey, server.client)
         media_client = MediaSyncer(col, media_server)
         media_client.sync()
         col.close(save=True)
     except:
-        storage['anki_sync_successful'] = False
-        storage['anki_error_msg'] = traceback.format_exc()
-        print(storage['anki_error_msg'])
         try:
             os.remove(anki_col_path(username)) # NOTE: blocking io
         except:
             pass
+        return traceback.format_exc()
+
+
+async def initial_anki_sync(username, anki_hkey, storage):
+    """Downloads a users's anki database and media files to rememberberry"""
+
+    yield 'Syncing anki database and media (this may take a while if you have lots of media)'
+    err = await asyncio.get_event_loop().run_in_executor(
+        None, partial(_sync_anki, username, anki_hkey))
+
+    if err is not None:
+        storage['anki_sync_successful'] = False
+        storage['anki_error_msg'] = err
+        print(err)
         yield 'Something went wrong...'
+        yield err
         return
 
     yield 'Syncing done'

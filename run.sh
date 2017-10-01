@@ -1,2 +1,2 @@
-ipfs daemon &
-python3.6 -m rememberberry.server
+./run_ipfs.sh
+./run_server.sh

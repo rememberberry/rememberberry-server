@@ -50,7 +50,6 @@ RUN git clone https://github.com/rememberberry/rememberberry-client.git
 
 # Set the cert path (need to volume map into this folder)
 ENV REMEMBERBERRY_CERT_PATH /etc/letsencrypt/live/bot.rememberberry.com/
-ENV REMEMBERBERRY_DATA_PATH /data/
 
 # Update python path
 ENV PYTHONPATH=$PYTHONPATH:/rememberscript:/anki:/rememberberry-server

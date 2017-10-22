@@ -1,20 +1,21 @@
 import os
 import json
-import shutil
 import pytest
 import rememberberry
+from rememberberry import ipfs
 from rememberscript import load_scripts_dir, validate_script
-from rememberscript import RememberMachine, FileStorage
+from rememberscript import RememberMachine
 from rememberberry.auth import data_file
 from rememberberry.testing import tmp_data_path, get_isolated_story, assert_replies
 
 @pytest.mark.asyncio
-@tmp_data_path('/tmp/data', delete=True)
+@tmp_data_path('/tmp/data', rm=True)
 async def test_study_anki():
-    shutil.copytree(os.path.join(os.path.dirname(__file__), 'data'), '/tmp/data')
+    await ipfs.cp_fs_to_mfs(
+        os.path.join(os.path.dirname(__file__), 'data'), '/tmp/data', rm=True, r=True)
 
     username = 'asd'
-    storage = FileStorage(data_file(username))
+    storage = ipfs.get_ipfs_storage(data_file(username))
     script = load_scripts_dir(rememberberry.SCRIPTS_PATH, storage)
     validate_script(script)
     await storage.load()
@@ -35,12 +36,13 @@ async def test_study_anki():
 
 
 @pytest.mark.asyncio
-@tmp_data_path('/tmp/data', delete=True)
+@tmp_data_path('/tmp/data', rm=True)
 async def test_decks():
-    shutil.copytree(os.path.join(os.path.dirname(__file__), 'data'), '/tmp/data')
+    await ipfs.cp_fs_to_mfs(
+        os.path.join(os.path.dirname(__file__), 'data'), '/tmp/data', rm=True, r=True)
 
     username = 'asd'
-    storage = FileStorage(data_file(username))
+    storage = ipfs.get_ipfs_storage(data_file(username))
     script = load_scripts_dir(rememberberry.SCRIPTS_PATH, storage)
     validate_script(script)
     await storage.load()

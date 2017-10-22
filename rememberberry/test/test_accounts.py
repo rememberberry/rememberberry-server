@@ -2,17 +2,17 @@ import json
 import pytest
 import rememberberry
 from rememberscript import load_scripts_dir, validate_script, load_script
-from rememberscript import FileStorage
+from rememberberry import ipfs
 from rememberberry.testing import (tmp_data_path, assert_replies,
                                    get_isolated_story, get_all_stories)
 
 
 @pytest.mark.asyncio
-@tmp_data_path('/tmp/data/', delete=True)
+@tmp_data_path('/tmp/data/', rm=True)
 async def test_signup_login():
     # Test sign up
     auth_token = lambda x: 'auth_token=' in x['content']
-    storage = FileStorage()
+    storage = ipfs.get_ipfs_storage()
     storage['name'] = 'benny'
     m, storage = get_isolated_story('sign_up', storage)
     await assert_replies(m.reply(''), 'What username would you like to have?')
@@ -38,7 +38,7 @@ async def test_signup_login():
     # Test login
     assert storage.get('username', None) == 'benny'
 
-    storage = FileStorage()
+    storage = ipfs.get_ipfs_storage()
     m, storage = get_isolated_story('login', storage)
     await assert_replies(m.reply(''), 'What is your username?')
     await assert_replies(m.reply('benny2'), 'And now the password')
@@ -56,7 +56,7 @@ async def test_signup_login():
     auth_token = storage['auth_token']
 
     # Test auth
-    storage = FileStorage()
+    storage = ipfs.get_ipfs_storage()
     m, storage = get_all_stories(storage)
     await assert_replies(m.reply('auth_token=%s' % auth_token),
                          'Hey benny!',

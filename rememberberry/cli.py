@@ -2,9 +2,10 @@ import os
 import asyncio
 from rememberscript import load_scripts_dir, validate_script
 from rememberscript import RememberMachine, FileStorage
+from rememberberry import ipfs
 
 async def run_loop():
-    storage = FileStorage()
+    storage = ipfs.get_ipfs_storage()
     path = os.path.join(os.path.dirname(__file__), 'scripts/')
     script = load_scripts_dir(path, storage)
     validate_script(script)

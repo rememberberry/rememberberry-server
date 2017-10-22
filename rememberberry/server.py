@@ -9,8 +9,8 @@ import traceback
 from aiohttp import web
 
 import rememberberry
+from rememberberry import ipfs
 from rememberscript import RememberMachine, load_scripts_dir, validate_script
-from rememberscript import FileStorage
 from anki.storage import _Collection
 
 logging.basicConfig(level=logging.WARNING)
@@ -24,16 +24,18 @@ async def cleanup(storage):
         if isinstance(value, _Collection):
             print('saving anki collection...')
             value.close(save=True)
+
     print('syncing storage...')
     await storage.sync()
 
 
 async def message_websocket_handler(request):
     print('client connected')
+    await ipfs.init()
     ws = web.WebSocketResponse()
     await ws.prepare(request)
 
-    storage = FileStorage()
+    storage = ipfs.get_ipfs_storage()
     script = load_scripts_dir(rememberberry.SCRIPTS_PATH, storage)
     validate_script(script)
     machine = RememberMachine(script, storage)

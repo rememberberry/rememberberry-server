@@ -1,27 +1,27 @@
 - name: init
   =>+: "What username would you like to have?"
-  +=>: "[[_is_valid_username, _validation_msg = validate_username(msg)]]"
+  +=>: "[[_username_validation_error = validate_username(msg)]]"
   =?>:
-    - ?: "{{_is_valid_username}}"
+    - ?: "{{_username_validation_error is None}}"
       +: 
         - "[[_username = msg]]"
       =>: get_password
     - +: 
-        - "{{_validation_msg}}"
+        - "{{_username_validation_error}}"
       =>: loopback
 - name: get_password
   =>+: What password would you like?
   extra:
     response_type: password
     silent_response: true
-  +=>: "[[_is_valid_password, _validation_msg = validate_password(msg)]]"
+  +=>: "[[_password_validation_error = validate_password(msg)]]"
   =?>:
-    - ?: "{{_is_valid_password}}"
+    - ?: "{{_password_validation_error is None}}"
       +: 
         - "[[_password = msg]]"
       =>: confirm_password
     - +: 
-        - "{{_validation_msg}}"
+        - "{{_password_validation_error}}"
         - Please try again
       =>: loopback
 - name: confirm_password

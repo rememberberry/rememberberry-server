@@ -11,6 +11,7 @@ from anki.sched import Scheduler
 from anki.sync import FullSyncer, RemoteServer, MediaSyncer, RemoteMediaServer
 import rememberberry
 from rememberberry.auth import account_hex
+from rememberberry import ipfs
 
 PROGRESS_TMPL = Template(
 """<div>
@@ -33,37 +34,43 @@ async def get_anki_hkey(anki_username, anki_password):
 
 
 def get_user_dir(username):
-    return os.path.join(rememberberry.USERS_PATH, '%s' % account_hex(username))
+    return os.path.join(rememberberry.ipfs.DATA_ROOT, 'users', '%s' % account_hex(username))
+
 
 def anki_col_path(username):
     return os.path.join(get_user_dir(username), 'collection.anki2')
 
-def get_anki_col(username):
-    try:
-        os.makedirs(get_user_dir(username)) # NOTE: blocking io
-    except:
-        pass
-    return Collection(anki_col_path(username))
+
+async def get_anki_col(username):
+    print('get_anki_col', anki_col_path(username))
+    ipfs_ctx = ipfs.MutableFileContext(
+        ext='anki2', mfs_path=anki_col_path(username))
+    await ipfs_ctx.__aenter__()
+    col = Collection(ipfs_ctx.fs_path)
+
+    # Set a sync hook that exits the ipfs file context when the storage is
+    # synced
+    async def sync_hook():
+        print('running sync_hook')
+        await ipfs_ctx.__aexit__()
+    col.__sync_hook__ = sync_hook
+    return col
 
 
-def _sync_anki(username, anki_hkey):
+def _sync_anki(col_path, anki_hkey):
     try:
-        col = get_anki_col(username)
+        col = Collection(col_path)
 
         server = RemoteServer(anki_hkey)
         client = FullSyncer(col, anki_hkey, server.client)
         client.download()
-        col = get_anki_col(username) # reload collection
+        col = Collection(col_path) # reload collection
 
         media_server = RemoteMediaServer(col, anki_hkey, server.client)
         media_client = MediaSyncer(col, media_server)
         media_client.sync()
         col.close(save=True)
     except:
-        try:
-            os.remove(anki_col_path(username)) # NOTE: blocking io
-        except:
-            pass
         return traceback.format_exc()
 
 
@@ -71,8 +78,19 @@ async def initial_anki_sync(username, anki_hkey, storage):
     """Downloads a users's anki database and media files to rememberberry"""
 
     yield 'Syncing anki database and media (this may take a while if you have lots of media)'
-    err = await asyncio.get_event_loop().run_in_executor(
-        None, partial(_sync_anki, username, anki_hkey))
+    # Make user dir if not exists
+    await ipfs.mfs_mkdirs(get_user_dir(username))
+
+    # Need to set up a folder context for anki syncing
+    # Since anki writes media files in the same folder as the collection
+    col_path = anki_col_path(username)
+    col_dir = os.path.dirname(col_path)
+    ctx = ipfs.MutableFolderContext(col_dir)
+    async with ctx:
+        fs_col_path = os.path.join(ctx.fs_path, os.path.basename(col_path))
+        err = await asyncio.get_event_loop().run_in_executor(
+            None, partial(_sync_anki, fs_col_path, anki_hkey))
+
 
     if err is not None:
         storage['anki_sync_successful'] = False

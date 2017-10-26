@@ -211,10 +211,20 @@ async def cp_fs_to_mfs(fs_path, mfs_path, rm=False, r=False, update_root=True):
         '/ipfs/%s' % ipfs_hash, mfs_path, rm=rm, r=r, update_root=update_root)
 
 
+async def is_daemon_running():
+    out, err = await asyncio.get_event_loop().run_in_executor(
+        None, partial(_run_commands, ['ipfs', 'id']))
+
+    return err.decode('utf-8') != 'Error: api not running\n'
+
+
 async def init():
     global DATA_ROOT_HASH
     if DATA_ROOT_HASH is not None:
         return
+
+    if not await is_daemon_running():
+        raise RuntimeError("IPFS daemon is not running")
 
     DATA_ROOT_HASH = await mfs_hash(DATA_ROOT)
     if not DATA_ROOT_HASH:

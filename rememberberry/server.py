@@ -37,7 +37,7 @@ async def message_websocket_handler(request):
 
     storage = ipfs.get_ipfs_storage()
     script = load_scripts_dir(rememberberry.SCRIPTS_PATH, storage)
-    validate_script(script)
+    await validate_script(script)
     machine = RememberMachine(script, storage)
     machine.init()
     try:

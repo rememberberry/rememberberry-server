@@ -8,7 +8,7 @@ async def run_loop():
     storage = ipfs.get_ipfs_storage()
     path = os.path.join(os.path.dirname(__file__), 'scripts/')
     script = load_scripts_dir(path, storage)
-    validate_script(script)
+    await validate_script(script)
     machine = RememberMachine(script, storage)
     machine.init()
 

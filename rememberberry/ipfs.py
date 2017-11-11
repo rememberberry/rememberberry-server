@@ -45,7 +45,7 @@ class MutableFileContext:
             # Copy from the readonly mount point at /ipfs/ to the tmp file
             shutil.copy('/ipfs/%s' % ipfs_hash, self.fs_path)
 
-    async def __aexit__(self, exc_type, exc, tb):
+    async def __aexit__(self, exc_type=None, exc=None, tb=None):
         if exc is None:
             # Copy the file to mfs
             await cp_fs_to_mfs(self.fs_path, self.mfs_path, rm=True)

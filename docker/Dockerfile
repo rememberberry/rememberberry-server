@@ -2,6 +2,7 @@
 # Volume map 
 #  * /etc/letsencrypt/ from host to container
 #  * ~/.ipfs/ to /root/.ipfs
+# Build with: docker build --build-arg CACHE_DATE=$(date) -t rememberberry .
 
 FROM ubuntu:16.04
 RUN apt-get update

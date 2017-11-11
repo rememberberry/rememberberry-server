@@ -42,7 +42,6 @@ def anki_col_path(username):
 
 
 async def get_anki_col(username):
-    print('get_anki_col', anki_col_path(username))
     ipfs_ctx = ipfs.MutableFileContext(
         ext='anki2', mfs_path=anki_col_path(username))
     await ipfs_ctx.__aenter__()

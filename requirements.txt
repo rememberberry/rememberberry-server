@@ -1,3 +1,4 @@
 aiohttp
 validate_email
 aiofiles
+ipfsapi

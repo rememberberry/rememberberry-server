@@ -1,7 +1,7 @@
 # Notes:
 # Volume map 
-#  * /etc/letsencrypt/ from host to container
 #  * ~/.ipfs/ to /root/.ipfs
+# /etc/letsencrypt/bot.rememberberry/ is copied from host to image at build time
 # Build with: docker build --build-arg CACHE_DATE=$(date) -t rememberberry .
 
 FROM ubuntu:16.04
@@ -48,6 +48,9 @@ ARG CACHE_DATE=1
 RUN git clone https://github.com/rememberberry/rememberberry-server && pip3.6 install -r rememberberry-server/requirements.txt
 RUN git clone https://github.com/rememberberry/rememberscript.git && pip3.6 install -r rememberscript/requirements.txt
 RUN git clone https://github.com/rememberberry/rememberberry-client.git
+
+# Copy the certs from the host
+COPY certs /etc/letsencrypt/live/bot.rememberberry.com/
 
 # Set the cert path (need to volume map into this folder)
 ENV REMEMBERBERRY_CERT_PATH /etc/letsencrypt/live/bot.rememberberry.com/

@@ -67,16 +67,21 @@ if __name__ == '__main__':
 
     ssl_context = None
     ssl_cert_path = os.environ.get('REMEMBERBERRY_CERT_PATH', None)
-    if ssl_cert_path and os.path.exists(ssl_cert_path):
+    if ssl_cert_path:
+        if not os.path.exists(ssl_cert_path):
+            print('SSL cert path %s doesn\'t exist' % ssl_cert_path)
+            raise ValueError()
+
         print('trying to use ssl context from %s' % ssl_cert_path)
         fullchain_path = os.path.join(ssl_cert_path, 'fullchain.pem')
         privkey_path = os.path.join(ssl_cert_path, 'privkey.pem')
-        if os.exists(fullchain_path) and os.exists(privkey_path):
+        if os.path.exists(fullchain_path) and os.path.exists(privkey_path):
             port = 443
             ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
-            ssl_context.load_cert_chain(fullchain_path, privkey)
+            ssl_context.load_cert_chain(fullchain_path, privkey_path)
         else:
-            print('fullchain or privkey didn\'t exist, falling back on non-ssl')
+            print('fullchain or privkey didn\'t exist')
+            raise ValueError()
 
     app.router.add_route('GET', '/', message_websocket_handler)
     try:

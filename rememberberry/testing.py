@@ -27,7 +27,7 @@ def tmp_data_path(data_path, rm=False):
     return _wrap
 
 
-def get_isolated_story(name, storage):
+async def get_isolated_story(name, storage):
     name_script = load_script(rememberberry.SCRIPTS_PATH, name, storage)
     script = {name: name_script}
     script['init'] = [
@@ -39,15 +39,15 @@ def get_isolated_story(name, storage):
             }
         }
     ]
-    validate_script(script)
+    await validate_script(script)
     m = RememberMachine(script, storage)
     m.init()
 
     return m, storage
 
-def get_all_stories(storage):
+async def get_all_stories(storage):
     script = load_scripts_dir(rememberberry.SCRIPTS_PATH, storage)
-    validate_script(script)
+    await validate_script(script)
     m = RememberMachine(script, storage)
     m.init()
 

@@ -6,7 +6,7 @@ from rememberberry import ipfs
 from rememberscript import load_scripts_dir, validate_script
 from rememberscript import RememberMachine
 from rememberberry.auth import data_file
-from rememberberry.testing import tmp_data_path, get_isolated_story, assert_replies
+from rememberberry.testing import tmp_data_path, assert_replies
 
 @pytest.mark.asyncio
 @tmp_data_path('/tmp/data', rm=True)
@@ -17,7 +17,7 @@ async def test_study_anki():
     username = 'asd'
     storage = ipfs.get_ipfs_storage(data_file(username))
     script = load_scripts_dir(rememberberry.SCRIPTS_PATH, storage)
-    validate_script(script)
+    await validate_script(script)
     await storage.load()
     m = RememberMachine(script, storage)
     m.init()
@@ -44,7 +44,7 @@ async def test_decks():
     username = 'asd'
     storage = ipfs.get_ipfs_storage(data_file(username))
     script = load_scripts_dir(rememberberry.SCRIPTS_PATH, storage)
-    validate_script(script)
+    await validate_script(script)
     await storage.load()
     m = RememberMachine(script, storage)
     m.init()

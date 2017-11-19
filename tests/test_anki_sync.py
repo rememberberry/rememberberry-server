@@ -10,7 +10,7 @@ from rememberberry import ipfs
 async def test_anki_account():
     storage = ipfs.get_ipfs_storage()
     storage['username'] = 'alice'
-    m, storage = get_isolated_story('login_anki', storage)
+    m, storage = await get_isolated_story('login_anki', storage)
     await assert_replies(m.reply(''), 'What is your Anki username?')
     await assert_replies(m.reply('ajshdkajhsdkajshd'), 'And now the password')
     await assert_replies(m.reply('jkdhskjhgdksjhg'),

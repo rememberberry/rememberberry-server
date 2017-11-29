@@ -25,8 +25,8 @@ RUN apt install -y python3.6-dev libasound-dev portaudio19-dev libportaudio2 lib
 RUN pip3.6 install -r anki/requirements.txt
 
 # Install IPFS
-RUN curl -O https://ipfs.io/ipns/dist.ipfs.io/go-ipfs/v0.4.10/go-ipfs_v0.4.10_linux-amd64.tar.gz && \
-    tar -xvf go-ipfs_v0.4.10_linux-amd64.tar.gz && \
+RUN curl -O https://ipfs.io/ipns/dist.ipfs.io/go-ipfs/v0.4.12/go-ipfs_v0.4.12_linux-amd64.tar.gz && \
+    tar -xvf go-ipfs_v0.4.12_linux-amd64.tar.gz && \
     cd go-ipfs && \
     ./install.sh
 

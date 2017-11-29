@@ -89,6 +89,9 @@ async def initial_anki_sync(username, anki_hkey, storage):
         fs_col_path = os.path.join(ctx.fs_path, os.path.basename(col_path))
         err = await asyncio.get_event_loop().run_in_executor(
             None, partial(_sync_anki, fs_col_path, anki_hkey))
+        print('sync done')
+        if err is not None:
+            yield err
 
 
     if err is not None:

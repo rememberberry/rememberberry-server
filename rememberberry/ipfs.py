@@ -86,6 +86,7 @@ class MutableFolderContext:
     async def __aexit__(self, exc_type, exc, tb):
         if exc is None:
             # Copy the files to mfs
+            print('exiting folder context')
             await cp_fs_to_mfs(self.fs_path, self.mfs_path, rm=True, r=True)
         else:
             import traceback

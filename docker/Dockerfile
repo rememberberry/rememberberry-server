@@ -8,8 +8,8 @@ FROM ubuntu:16.04
 RUN apt-get update
 RUN apt-get install -y software-properties-common python-software-properties
 RUN apt-get -y install git
-RUN add-apt-repository ppa:fkrull/deadsnakes
-RUN apt update && apt upgrade
+RUN add-apt-repository -y ppa:deadsnakes/ppa
+RUN apt -y update && apt -y upgrade
 RUN apt-get install -y python3.6 curl
 RUN curl https://bootstrap.pypa.io/get-pip.py | python3.6
 

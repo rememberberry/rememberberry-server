@@ -5,7 +5,7 @@
 # Build with: docker build --build-arg CACHE_DATE=$(date) -t rememberberry .
 
 FROM ubuntu:16.04
-RUN apt-get update
+RUN apt-get -y update
 RUN apt-get install -y software-properties-common python-software-properties
 RUN apt-get -y install git
 RUN add-apt-repository -y ppa:deadsnakes/ppa

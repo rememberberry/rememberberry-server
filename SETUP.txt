@@ -7,17 +7,21 @@ sudo apt-get install -y docker-ce
 2. Clone rememberberry-server
 git clone https://github.com/rememberberry/rememberberry-server.git
 
-3. Build rememberberry container:
-cd rememberberry-server/docker
-docker build --build-arg CACHE_DATE=2 -t rememberberry .
+3. Build rememberberry container by running the script:
+./build_docker.sh
 
-3. Setup Letsencrypt ssl certificates
+3. If on server, setup Letsencrypt ssl certificates
 sudo git clone https://github.com/letsencrypt/letsencrypt /opt/letsencrypt
 cd /opt/letsencrypt
 sudo -H ./letsencrypt-auto certonly --standalone -d bot.rememberberry.com
 
 4. Run docker container
-docker run -v /etc/letsencrypt/:/etc/letsencrypt/ -p 443:443 -td rememberberry   
+in stage:
+./run_docker_stage.sh
+in prod:
+./run_docker_prod_bash.sh
+or
+./run_docker_prod.sh
 
 5. Publish client website
 git clone https://github.com/rememberberry/rememberberry-client.git
@@ -26,3 +30,10 @@ cd rememberberry-client
 ./build.sh
 ipfs add -r build
 ipfs name publish ${folder hash}
+
+Make note of the ipns name
+
+To link your domain to this ipfs name, set the DNS records as following:
+CNAME record: @         gateway.ipfs.io.
+CNAME record: www       gateway.ipfs.io.
+TXT record:   _dnslink  dnslink=/ipns/${ipns name} 

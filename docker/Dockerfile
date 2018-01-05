@@ -61,4 +61,4 @@ ENV PYTHONPATH=$PYTHONPATH:/rememberscript:/anki:/rememberberry-server
 EXPOSE 80 443
 
 # Run ipfs daemon and rememberberry server
-CMD ["bash", "/rememberberry-server/run.sh"]
+ENTRYPOINT ["bash", "/rememberberry-server/run.sh"]

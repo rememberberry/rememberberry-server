@@ -1,1 +1,1 @@
-python3.6 -m rememberberry.server
+python3.6 -m rememberberry.server "$@"

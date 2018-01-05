@@ -5,6 +5,7 @@ import ssl
 import asyncio
 import aiohttp
 import logging
+import argparse
 import traceback
 from aiohttp import web
 
@@ -62,16 +63,20 @@ async def message_websocket_handler(request):
 
 
 if __name__ == '__main__':
-    port = int(sys.argv[1]) if len(sys.argv) > 1 else 80
-    ssl_cert_path = sys.argv[2] if len(sys.argv) > 2 else None
+    parser = argparse.ArgumentParser(description='Run Rememberberry server')
+    parser.add_argument("--ssl", help="use ssl certs", action="store_true")
+    parser.add_argument("--port", help="set the port, if not ssl (in case it will be 443",
+                        type=int, default=80)
+
+    args = parser.parse_args()
+    port = args.port
+    ssl_cert_path = os.environ.get('REMEMBERBERRY_CERT_PATH', None)
+    if args.ssl and (ssl_cert_path is None or not os.path.exists(ssl_cert_path)):
+        print('SSL cert path %s doesn\'t exist' % ssl_cert_path)
+        raise ValueError()
 
     ssl_context = None
-    ssl_cert_path = os.environ.get('REMEMBERBERRY_CERT_PATH', None)
-    if ssl_cert_path:
-        if not os.path.exists(ssl_cert_path):
-            print('SSL cert path %s doesn\'t exist' % ssl_cert_path)
-            raise ValueError()
-
+    if args.ssl:
         print('trying to use ssl context from %s' % ssl_cert_path)
         fullchain_path = os.path.join(ssl_cert_path, 'fullchain.pem')
         privkey_path = os.path.join(ssl_cert_path, 'privkey.pem')

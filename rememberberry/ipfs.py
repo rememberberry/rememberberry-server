@@ -182,15 +182,48 @@ async def cp_ipfs_to_mfs(ipfs_path, mfs_path, rm=False, r=False, update_root=Tru
         await _update_root_hash()
 
 
-async def cp_fs_to_mfs(fs_path, mfs_path, rm=False, r=False, update_root=True):
+async def add_files_ipfsapi(fs_path, r=False):
     try:
         ret = await API.add(fs_path, recursive=r)
     except:
-        print('cp_fs_to_mfs from %s to %s failed' % (fs_path, mfs_path))
+        print('add_files_ipfsapi at %s failed' % fs_path)
         return None
 
     last = ret[-1] if isinstance(ret, list) else ret
     ipfs_hash = last['Hash']
+    return ipfs_hash
+
+
+def _run_commands(*commands):
+    """Runs command(s) and returns their stdout and stderr
+    Commands are lists of command parts"""
+    results = []
+    for command in commands:
+        p = Popen(command, stdout=PIPE, stderr=PIPE)
+        results.append(p.communicate())
+    return results if len(results) > 1 else results[0]
+
+
+async def add_files_goipfs(fs_path, r=False):
+    # -Q flag to force only final hash output
+    args = ['ipfs', 'add', '-r', '-Q', fs_path] if r else ['ipfs', 'add', '-Q', fs_path]
+    out, err = await asyncio.get_event_loop().run_in_executor(
+        None, partial(_run_commands, args))
+
+    err = err.decode('utf-8')
+    if err != '':
+        print('add_files_goipfs at %s failed: %s' % (fs_path, err))
+        raise RuntimeError
+
+    return out.decode('utf-8').strip()
+
+
+async def cp_fs_to_mfs(fs_path, mfs_path, rm=False, r=False, update_root=True):
+    # Use goipfs for now, since ipfsapi runs out of memory when adding
+    # big folders: https://github.com/ipfs/py-ipfs-api/issues/104
+    #ipfs_hash = await add_files_ipfsapi(fs_path, r=r)
+    ipfs_hash = await add_files_goipfs(fs_path, r=r)
+
     await cp_ipfs_to_mfs(
         '/ipfs/%s' % ipfs_hash, mfs_path, rm=rm, r=r, update_root=update_root)
 
@@ -200,7 +233,11 @@ async def init():
     if DATA_ROOT_HASH is not None:
         return
 
-    API = await ipfsapi_asyncio.connect()
+    try:
+        API = await ipfsapi_asyncio.connect()
+    except:
+        print("Couldn't connect to ipfs, is it running?")
+        raise
 
     DATA_ROOT_HASH = await mfs_hash(DATA_ROOT)
     if not DATA_ROOT_HASH:

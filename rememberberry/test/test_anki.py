@@ -1,12 +1,18 @@
 import os
 import json
 import pytest
+import logging
 import rememberberry
 from rememberberry import ipfs
 from rememberscript import load_scripts_dir, validate_script
 from rememberscript import RememberMachine
 from rememberberry.auth import data_file
 from rememberberry.testing import tmp_data_path, assert_replies
+
+
+logging.basicConfig(
+    format='%(name)s %(levelname)s %(asctime)s: %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p', level=logging.DEBUG)
+
 
 @pytest.mark.asyncio
 @tmp_data_path('/tmp/data', rm=True)

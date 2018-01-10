@@ -24,7 +24,7 @@ def _get_hkey(anki_username, anki_password):
     try:
         return RemoteServer(None).hostKey(anki_username, anki_password)
     except:
-        print('anki auth with: %s %s didn\'t work' % (anki_username, anki_password))
+        logging.info('anki auth with: %s %s didn\'t work' % (anki_username, anki_password))
         return None
 
 
@@ -50,7 +50,7 @@ async def get_anki_col(username):
     # Set a sync hook that exits the ipfs file context when the storage is
     # synced
     async def sync_hook():
-        print('running sync_hook')
+        logging.info('running sync_hook')
         await ipfs_ctx.__aexit__()
     col.__sync_hook__ = sync_hook
     return col
@@ -89,7 +89,7 @@ async def initial_anki_sync(username, anki_hkey, storage):
         fs_col_path = os.path.join(ctx.fs_path, os.path.basename(col_path))
         err = await asyncio.get_event_loop().run_in_executor(
             None, partial(_sync_anki, fs_col_path, anki_hkey))
-        print('sync done')
+        logging.info('sync done')
         if err is not None:
             yield err
 
@@ -97,7 +97,7 @@ async def initial_anki_sync(username, anki_hkey, storage):
     if err is not None:
         storage['anki_sync_successful'] = False
         storage['anki_error_msg'] = err
-        print(err)
+        logging.warning(err)
         yield 'Something went wrong...'
         yield err
         return

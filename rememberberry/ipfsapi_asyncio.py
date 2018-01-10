@@ -1,6 +1,7 @@
 """
 An monkeypatched version of ipfsapi which provides async methods
 """
+import logging
 from functools import partial
 from types import MethodType
 import asyncio
@@ -16,10 +17,10 @@ async def connect(*args, **kwargs):
                isinstance(getattr(api, attr), MethodType))]
     
     async def _monkey_patch(method, *args, **kwargs):
-        print('_monkey_patch call %s %s %s' % (method, str(args), str(kwargs)))
+        logging.debug('_monkey_patch call %s %s %s' % (method, str(args), str(kwargs)))
         ret = await asyncio.get_event_loop().run_in_executor(
             None, partial(method, *args, **kwargs))
-        print('_monkey_patch returning %s' % str(ret))
+        logging.debug('_monkey_patch returning %s' % str(ret))
         return ret
 
     for attr in methods:

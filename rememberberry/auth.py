@@ -1,5 +1,6 @@
 import os
 import hashlib
+import logging
 from secrets import token_hex
 import aiofiles
 import rememberberry
@@ -38,9 +39,9 @@ async def login(username, password, storage):
 
 
 async def login_with_token(auth_token, storage):
-    print('logging in with token %s' % auth_token)
+    logging.info('logging in with token %s' % auth_token)
     if auth_token not in ACTIVE_AUTH_TOKENS:
-        print('token not active')
+        logging.info('token not active')
         return False
     return await login(*ACTIVE_AUTH_TOKENS[auth_token], storage)
 

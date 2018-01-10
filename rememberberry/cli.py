@@ -1,5 +1,6 @@
 import os
 import asyncio
+import logging
 from rememberscript import load_scripts_dir, validate_script
 from rememberscript import RememberMachine, FileStorage
 from rememberberry import ipfs
@@ -18,7 +19,7 @@ async def run_loop():
             async for reply in machine.reply(msg):
                 print('> ', reply)
     except KeyboardInterrupt:
-        print('syncing storage')
+        logging.info('syncing storage')
         await storage.sync()
 
 

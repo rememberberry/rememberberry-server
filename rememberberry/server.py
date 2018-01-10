@@ -14,11 +14,7 @@ from rememberberry import ipfs
 from rememberscript import RememberMachine, load_scripts_dir, validate_script
 from anki.storage import _Collection
 
-logging.basicConfig(level=logging.WARNING)
-logger = logging.getLogger(__name__)
-
 app = web.Application()
-
 
 async def cleanup(storage):
     for key, value in storage.items():
@@ -31,7 +27,7 @@ async def cleanup(storage):
 
 
 async def message_websocket_handler(request):
-    print('client connected')
+    logging.info('client connected')
     await ipfs.init()
     ws = web.WebSocketResponse()
     await ws.prepare(request)
@@ -49,7 +45,7 @@ async def message_websocket_handler(request):
                     ws.send_str(reply)
 
             elif msg.tp == aiohttp.WSMsgType.ERROR:
-                logger.info('ws connection closed with exception %s' %
+                logging.info('ws connection closed with exception %s' %
                       ws.exception())
         await cleanup(storage)
     except:
@@ -57,18 +53,30 @@ async def message_websocket_handler(request):
         traceback.print_exc()
         ws.send_str(json.dumps({'msg': traceback.format_exc()}))
         raise
-    print('websocket connection closed')
+    logging.info('websocket connection closed')
 
     return ws
 
 
 if __name__ == '__main__':
+    lvl_map = {
+        'DEBUG': logging.DEBUG, 'INFO': logging.INFO, 'WARNING': logging.WARNING,
+        'ERROR': logging.ERROR, 'CRITICAL': logging.CRITICAL
+    }
     parser = argparse.ArgumentParser(description='Run Rememberberry server')
     parser.add_argument("--ssl", help="use ssl certs", action="store_true")
     parser.add_argument("--port", help="set the port, if not ssl (in case it will be 443",
                         type=int, default=80)
+    parser.add_argument("--logfile", help="the optional output log file", type=str)
+    parser.add_argument("--loglvl", help="the log level",
+                        type=str, choices=list(lvl_map.keys()), default='INFO')
 
     args = parser.parse_args()
+
+    # Set up logging
+    logging.basicConfig(
+        format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p', level=args.loglvl)
+
     port = args.port
     ssl_cert_path = os.environ.get('REMEMBERBERRY_CERT_PATH', None)
     if args.ssl and (ssl_cert_path is None or not os.path.exists(ssl_cert_path)):

@@ -15,6 +15,7 @@ import io
 import uuid
 import shutil
 import asyncio
+import logging
 from functools import partial
 from subprocess import Popen, PIPE, STDOUT
 import aiofiles
@@ -86,7 +87,7 @@ class MutableFolderContext:
     async def __aexit__(self, exc_type, exc, tb):
         if exc is None:
             # Copy the files to mfs
-            print('exiting folder context')
+            logging.debug('exiting folder context')
             await cp_fs_to_mfs(self.fs_path, self.mfs_path, rm=True, r=True)
         else:
             import traceback
@@ -109,7 +110,7 @@ async def mfs_write(mfs_path, data, mode='', update_root=True):
     try:
         await API.files_write(mfs_path, io.BytesIO(data), create=True)
     except:
-        print('mfs_write failed with path %s' % mfs_path)
+        logging.info('mfs_write failed with path %s' % mfs_path)
         raise
 
     # Update the root
@@ -135,7 +136,7 @@ async def mfs_hash(mfs_path):
     """Returns the ipfs hash if the mfs_path exists, otherwise None"""
     try:
         ret = await API.files_stat(mfs_path)
-        print('_files_stat returning %s' % str(ret))
+        logging.debug('_files_stat returning %s' % str(ret))
     except:
         return None
 
@@ -147,7 +148,7 @@ async def mfs_mkdirs(mfs_path, update_root=True):
     try:
         await API.files_mkdir(mfs_path, parents=True)
     except:
-        print('mfs_mkdirs at %s failed' % mfs_path)
+        logging.debug('mfs_mkdirs at %s failed' % mfs_path)
         return None
 
     if update_root:
@@ -160,7 +161,7 @@ async def mfs_rm(mfs_path, r=False, update_root=True):
     try:
         await API.files_rm(mfs_path, recursive=r)
     except:
-        print('mfs_rm at %s failed' % mfs_path)
+        logging.info('mfs_rm at %s failed' % mfs_path)
         return None
 
     if update_root:
@@ -175,7 +176,7 @@ async def cp_ipfs_to_mfs(ipfs_path, mfs_path, rm=False, r=False, update_root=Tru
     try:
         await API.files_cp(ipfs_path, mfs_path)
     except:
-        print('cp_ipfs_to_mfs from %s to %s failed' % (ipfs_path, mfs_path))
+        logging.info('cp_ipfs_to_mfs from %s to %s failed' % (ipfs_path, mfs_path))
         return None
 
     if update_root:
@@ -186,7 +187,7 @@ async def add_files_ipfsapi(fs_path, r=False):
     try:
         ret = await API.add(fs_path, recursive=r)
     except:
-        print('add_files_ipfsapi at %s failed' % fs_path)
+        logging.info('add_files_ipfsapi at %s failed' % fs_path)
         return None
 
     last = ret[-1] if isinstance(ret, list) else ret
@@ -212,7 +213,7 @@ async def add_files_goipfs(fs_path, r=False):
 
     err = err.decode('utf-8')
     if err != '':
-        print('add_files_goipfs at %s failed: %s' % (fs_path, err))
+        logging.info('add_files_goipfs at %s failed: %s' % (fs_path, err))
         raise RuntimeError
 
     return out.decode('utf-8').strip()
@@ -236,7 +237,7 @@ async def init():
     try:
         API = await ipfsapi_asyncio.connect()
     except:
-        print("Couldn't connect to ipfs, is it running?")
+        logging.critical("Couldn't connect to ipfs, is it running?")
         raise
 
     DATA_ROOT_HASH = await mfs_hash(DATA_ROOT)
